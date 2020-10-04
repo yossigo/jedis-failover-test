@@ -27,6 +27,9 @@ public class JedisTest
         long counter = 0;
         long failStart = 0;
 
+        String lastError = "";
+        long lastErrorCount = 0;
+
         while (true) {
             try {
                 jc.set("my-key", "my-value");
@@ -34,12 +37,24 @@ public class JedisTest
                 if (failStart == 0) {
                     failStart = java.lang.System.currentTimeMillis();
                     System.out.println("");
-                    System.out.print("Cluster is down: ");
-                } else {
-                    System.out.print("!");
+                    System.out.println("Cluster is down: ");
                 }
+
+                if (!(lastError.equals(ex.getMessage()))) {
+                    if (lastError.length() > 0) {
+                        System.out.println("");
+                    }
+                    lastError = ex.getMessage();
+                    lastErrorCount = 1;
+                } else {
+                    lastErrorCount++;
+                }
+
+                System.out.print("  Exception: " + lastError + " [" + lastErrorCount + " repeats]\r");
                 continue;
             }
+
+            lastError = "";
             counter++;
 
             if (failStart > 0) {
