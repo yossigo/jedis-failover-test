@@ -4,6 +4,7 @@ import org.apache.commons.cli.*;
 
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Random;
 import redis.clients.jedis.*;
 import redis.clients.jedis.exceptions.*;
 
@@ -30,9 +31,12 @@ public class JedisTest
         String lastError = "";
         long lastErrorCount = 0;
 
+        Random rand = new Random();
+
         while (true) {
             try {
-                jc.set("my-key", "my-value");
+                String keyName = "key-" + Integer.toString(rand.nextInt(100000));
+                jc.set(keyName, "value-for-" + keyName);
             } catch (JedisException ex) {
                 if (failStart == 0) {
                     failStart = java.lang.System.currentTimeMillis();
